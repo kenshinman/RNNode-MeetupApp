@@ -1,29 +1,58 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { fetchMeetups } from "./constants/api";
 
 export default class App extends React.Component {
-  componentWillMount(){
-    fetch("http://127.0.0.1:5000/api/meetups")
-    .then( response => {
-      return response.json()
-    }).then( data => {
-      console.log(data)
-    }).catch( err => console.log("err =>", err))
+  static defaultProps = {
+    fetchMeetups
+  };
+
+  state = {
+    loading: false,
+    meetups: []
+  };
+
+  componentDidMount() {
+    this.setState({ loading: true });
+    fetch("http://192.168.43.83:5000/api/meetups")
+      .then(res => res.json())
+      .then(meetups => {
+        console.log(meetups);
+        this.setState({ meetups, loading: false });
+      })
+      .catch(err => console.log(err));
+
+    // //console.log(data);
+    // this.setState({loading: false, meetups: data.meetups})
   }
   render() {
-    return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" />
+          <Text>Loading data...</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          <Text>MeetupsRN</Text>
+          {this.state.meetups.map( meetup => {
+            return(
+              <Text key={meetup._id}>{meetup.title}</Text>
+            )
+          })}
+        </View>
+      );
+    }
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
+  }
 });
