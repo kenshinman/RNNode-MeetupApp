@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "meetuprn",
+    "name": "meetups-mobile",
     "description": "An empty new project",
-    "slug": "meetuprn",
+    "slug": "meetups-mobile",
     "privacy": "public",
     "sdkVersion": "21.0.0",
     "version": "1.0.0",

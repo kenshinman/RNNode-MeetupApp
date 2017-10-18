@@ -1,4 +1,5 @@
 import Group from "./model";
+import Meetup from "../meetups/model";
 
 export const createGroup = async (req, res) => {
   const { name, description, category } = req.body;
@@ -86,12 +87,40 @@ export const createGroupMeetup = async (req, res) => {
   }
 
   try {
-    const {meetup, group} = await Group.addMeetup(groupId, { title, description });
-    return res.status(201).json({error: false, meetup, group})
+    const { meetup, group } = await Group.addMeetup(groupId, {
+      title,
+      description
+    });
+    return res.status(201).json({ error: false, meetup, group });
   } catch (e) {
     console.log(e);
     return res
       .status(400)
       .json({ error: true, message: "Meetup cannot be created" });
+  }
+};
+
+export const getGroupMeetups = async (req, res) => {
+  const { groupId } = req.params;
+  if (!groupId) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Please provide a groupId" });
+  }
+
+  //check if group exists
+  const group = Group.findById(groupId);
+
+  if (!group) {
+    res.status(400).json({ error: true, message: "Group does not exist" });
+  }
+
+  try {
+    return res.status(200).json({
+      error: false,
+      meetups: await Meetup.find({ group: groupId }).populate("group", "name")
+    });
+  } catch (e) {
+    res.status(400).json({ error: true, message: "Cannot fetch Meetups" });
   }
 };
